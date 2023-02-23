@@ -6,6 +6,7 @@
 
 
 @if (string.IsNullOrEmpty(Model.QrCodeUrl)) {
+	@* Show registration form *@
 	<form method="post">
 		<p>@Html.LabelFor(n => n.EmailAddress)</p>
 		@Html.EditorFor(n => n.EmailAddress)
@@ -14,6 +15,7 @@
 	</form>
 }
 else {
+	@* Display new user's QR code once they are registered *@
 	<img src="@Model.QrCodeUrl" />
 
 	<p>@Model.ManualEntryCode</p>

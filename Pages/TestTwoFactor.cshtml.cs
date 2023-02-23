@@ -9,8 +9,10 @@ namespace _2FADemo.Pages
         [FromRoute] // Get value from URL parameter
         public string EmailAddress { get; set; }
         
-        [FromForm]
+        [FromForm] // Security code
         public string Code { get; set; }
+
+        // Stores result of whether the user was verified
 		public bool Result { get; set; }
 
 
@@ -18,6 +20,7 @@ namespace _2FADemo.Pages
 		public void OnGet()
         {
         }
+
 
 		public void OnPost([FromServices] AppDbContext db)
 		{
@@ -29,9 +32,9 @@ namespace _2FADemo.Pages
             // If user exists
             if (user != null)
             {
-                // Validate 2 factor authentication
-                TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
-				Result = tfa.ValidateTwoFactorPIN(user.Key, Code);
+				// Validate 2 factor authentication using the built in ASP.NET class from Google.Authenticator Nuget package
+				TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
+				Result = tfa.ValidateTwoFactorPIN(user.Key, Code);  // Returns true if user is validated
             }
 		}
 	}

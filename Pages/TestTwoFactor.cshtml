@@ -5,10 +5,12 @@
 
 @* Check form submission result *@
 @if (Model.Result) {
+	@* If valid verification code was entered, show message *@
 	<p>Congratulations! You're authenticated</p>
 
 }
 else {
+	@* Display form for entering the verification code *@
 	<form method="post">
 		<p>@Html.LabelFor(n => n.Code)</p>
 		@Html.EditorFor(n => n.Code)

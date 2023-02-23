@@ -7,13 +7,14 @@ using System.Security.Cryptography;
 
 namespace _2FADemo.Pages
 {
+    // Registration page
     public class RegisterModel : PageModel
     {
-        public string QrCodeUrl { get; set; }
-        public string ManualEntryCode { get; set; }
+        public string QrCodeUrl { get; set; }   // QR code
+        public string ManualEntryCode { get; set; } // Numeric code
 
-		[FromForm] // We expect this to get populated from the request
-		public string EmailAddress { get; set; }
+		[FromForm] // We expect the email field to get populated from the request, in the form on the page
+		public string EmailAddress { get; set; }    // User's email
 
         public void OnGet()
         {
@@ -23,11 +24,10 @@ namespace _2FADemo.Pages
 
         public void OnPost([FromServices] AppDbContext db)
         {
-            //string key = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
-            // Make key cryptographically sound
+            // Make random key
             string key = GenerateRandomString(10);
 
-            // Save to database
+            // Save new user to database
             db.Users.Add(new User
             {
                 Id = Guid.NewGuid(),
@@ -36,40 +36,45 @@ namespace _2FADemo.Pages
             });
             db.SaveChanges();
 
+            // Setup 2FA
             TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
             SetupCode setupInfo = tfa.GenerateSetupCode("Test Two Factor", EmailAddress, key, false, 3);
 
+            // Store QR code values into instance variables
             QrCodeUrl = setupInfo.QrCodeSetupImageUrl;
             ManualEntryCode = setupInfo.ManualEntryKey;
         }
 
 
-        public static string GenerateRandomString(int length, string allowableChars = null)
+		// Generates a string with random characters, which is used to create a key
+		public static string GenerateRandomString(int length, string allowableChars = null)
         {
-            if (string.IsNullOrEmpty(allowableChars))
+			// Check for empty value of allowableChars variable
+			if (string.IsNullOrEmpty(allowableChars))
             {
+                // Set the default allowed characters to the alphabet
                 allowableChars = @"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             }
 
             // Generate random data
             var data = new byte[length];
 
-            //RandomNumberGenerator randomNumberGenerator = new RandomNumberGenerator();
-            //using (var rng = randomNumberGenerator)
-            //    rng.GetBytes(data);
-
-            // Generate random data
+            // Generate random number
             var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(data);
+            rng.GetBytes(data); // Fills the data array with random values
 
-            var allowable = allowableChars.ToCharArray();
+			// Convert allowed characters to array
+			var allowable = allowableChars.ToCharArray();
             var len = allowable.Length;
-            var chars = new char[length];
-            for (var i = 0; i < length; i++)
+
+			// Create string of random letters
+			var chars = new char[length];
+			for (var i = 0; i < length; i++)
             {
                 // Create random number for index value
                 int randomIndex = data[i] % len;
-                chars[i] = allowable[randomIndex];
+				// Get the letter at that index from the array of allowed characters
+				chars[i] = allowable[randomIndex];
             }
 
             return new string(chars);

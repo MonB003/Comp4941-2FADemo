@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Entity framework db connection
 var configuration = builder.Configuration;
+// Setup database
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("AppDbConnectionString")));
 
 
