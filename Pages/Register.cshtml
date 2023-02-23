@@ -1,0 +1,20 @@
+﻿@page
+@model _2FADemo.Pages.RegisterModel
+@{
+}
+
+
+
+@if (string.IsNullOrEmpty(Model.QrCodeUrl)) {
+	<form method="post">
+		<p>@Html.LabelFor(n => n.EmailAddress)</p>
+		@Html.EditorFor(n => n.EmailAddress)
+
+		<button type="submit">Register</button>
+	</form>
+}
+else {
+	<img src="@Model.QrCodeUrl" />
+
+	<p>@Model.ManualEntryCode</p>
+}

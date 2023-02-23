@@ -1,0 +1,18 @@
+﻿@page "/login/{EmailAddress}"
+@model _2FADemo.Pages.TestTwoFactorModel
+@{
+}
+
+@* Check form submission result *@
+@if (Model.Result) {
+	<p>Congratulations! You're authenticated</p>
+
+}
+else {
+	<form method="post">
+		<p>@Html.LabelFor(n => n.Code)</p>
+		@Html.EditorFor(n => n.Code)
+
+		<button type="submit">Submit</button>
+	</form>
+}
